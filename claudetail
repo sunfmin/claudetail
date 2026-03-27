@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-watchtail - Watch/tail Claude Code JSONL session logs in human-readable format.
+claudetail - Watch/tail Claude Code JSONL session logs in human-readable format.
 
 Usage:
-  watchtail [OPTIONS] [DIRECTORY]
+  claudetail [OPTIONS] [DIRECTORY]
 
 Options:
   -n NUM        Number of recent messages to show (default: all)
