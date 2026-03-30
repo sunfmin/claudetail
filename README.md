@@ -9,15 +9,18 @@ If run outside a Claude Code project directory, claudetail lists your projects a
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sunfmin/claudetail/main/claudetail -o /usr/local/bin/claudetail && chmod +x /usr/local/bin/claudetail
+curl -fsSL https://raw.githubusercontent.com/sunfmin/claudetail/main/claudetail -o ~/.local/bin/claudetail && chmod +x ~/.local/bin/claudetail
 ```
 
 Or clone and link:
 
 ```bash
 git clone https://github.com/sunfmin/claudetail.git
-cp claudetail/claudetail /usr/local/bin/
+mkdir -p ~/.local/bin
+cp claudetail/claudetail ~/.local/bin/
 ```
+
+Make sure `~/.local/bin` is in your `PATH`.
 
 Requires Python 3.7+ (no external dependencies).
 
