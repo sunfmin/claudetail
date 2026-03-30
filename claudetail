@@ -483,6 +483,27 @@ def format_size(size_bytes):
     else:
         return f"{size_bytes/(1024*1024*1024):.1f}G"
 
+def cwd_to_claude_project_dir(cwd):
+    """Convert a working directory path to the corresponding Claude project directory.
+
+    Claude encodes project paths as: /Users/foo/my-project -> -Users-foo-my--project
+    (dashes in names become --, path separators become -)
+    """
+    if not os.path.isdir(CLAUDE_PROJECTS_DIR):
+        return None
+    # Encode: first escape real dashes, then replace / with -
+    encoded = cwd.replace("-", "--")
+    encoded = encoded.replace("/", "-")
+    candidate = os.path.join(CLAUDE_PROJECTS_DIR, encoded)
+    if os.path.isdir(candidate):
+        return candidate
+    # Fallback: scan project dirs and find one whose decoded path matches cwd
+    for entry in os.listdir(CLAUDE_PROJECTS_DIR):
+        decoded = get_project_display_name(entry)
+        if decoded == cwd:
+            return os.path.join(CLAUDE_PROJECTS_DIR, entry)
+    return None
+
 def resolve_directory(args_directory):
     """Resolve the target directory, with interactive selection if needed."""
     directory = args_directory
@@ -520,9 +541,8 @@ def resolve_directory(args_directory):
         return "."
 
     # Check if there's a matching project for the current working directory
-    cwd_project_name = cwd.replace("/", "-").lstrip("-")
-    candidate = os.path.join(CLAUDE_PROJECTS_DIR, f"-{cwd_project_name}")
-    if os.path.isdir(candidate) and glob.glob(os.path.join(candidate, "*.jsonl")):
+    candidate = cwd_to_claude_project_dir(cwd)
+    if candidate and os.path.isdir(candidate) and glob.glob(os.path.join(candidate, "*.jsonl")):
         return candidate
 
     # No JSONL files found locally - offer project selection
