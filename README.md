@@ -1,10 +1,12 @@
 # claudetail
 
-Watch/tail [Claude Code](https://claude.ai/code) JSONL session logs in human-readable format.
+Tail [Claude Code](https://claude.ai/code) session logs in real-time.
 
-Shows all message details including model info, token usage, tool calls with full inputs, tool results, thinking blocks, hook summaries, progress events, and session metadata.
+Ever stare at Claude Code wondering if it's still working or just stuck? Claude Code doesn't show much progress info — you can't tell if it's thinking, running tools, or doing nothing.
 
-If run outside a Claude Code project directory, claudetail lists your projects and lets you pick one interactively.
+`claudetail -f` gives you a live view of everything happening under the hood: what tools it's calling, what files it's reading/writing, token usage, thinking blocks, and more.
+
+Auto-detects the Claude project for your current working directory. If run outside a project, lists your projects and lets you pick one interactively.
 
 ## Install
 
