@@ -377,12 +377,10 @@ def get_project_display_name(dirname):
     """Convert Claude project directory name to a readable path."""
     # Format: -Users-sunfmin-Developments-projectname
     # Convert back to: /Users/sunfmin/Developments/projectname
+    # Note: this is ambiguous (dashes in names vs path separators both become -)
+    # so this is a best-effort display name
     path = dirname.replace("-", "/", 1)  # first dash is leading /
-    # Handle remaining dashes that are path separators vs dashes in names
-    # Claude uses -- for actual dashes in names, - for path separators
-    path = path.replace("--", "\x00")  # preserve actual double-dashes
     path = path.replace("-", "/")
-    path = path.replace("\x00", "-")
     return path
 
 def get_project_mtime(project_dir):
@@ -486,22 +484,16 @@ def format_size(size_bytes):
 def cwd_to_claude_project_dir(cwd):
     """Convert a working directory path to the corresponding Claude project directory.
 
-    Claude encodes project paths as: /Users/foo/my-project -> -Users-foo-my--project
-    (dashes in names become --, path separators become -)
+    Claude encodes project paths as: /Users/foo/my-project -> -Users-foo-my-project
+    (path separators become -, dashes in names stay as-is)
     """
     if not os.path.isdir(CLAUDE_PROJECTS_DIR):
         return None
-    # Encode: first escape real dashes, then replace / with -
-    encoded = cwd.replace("-", "--")
-    encoded = encoded.replace("/", "-")
+    # Encode: simply replace / with -
+    encoded = cwd.replace("/", "-")
     candidate = os.path.join(CLAUDE_PROJECTS_DIR, encoded)
     if os.path.isdir(candidate):
         return candidate
-    # Fallback: scan project dirs and find one whose decoded path matches cwd
-    for entry in os.listdir(CLAUDE_PROJECTS_DIR):
-        decoded = get_project_display_name(entry)
-        if decoded == cwd:
-            return os.path.join(CLAUDE_PROJECTS_DIR, entry)
     return None
 
 def resolve_directory(args_directory):
