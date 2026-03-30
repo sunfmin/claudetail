@@ -522,22 +522,19 @@ def resolve_directory(args_directory):
         print(f"Error: '{directory}' is not a directory", file=sys.stderr)
         sys.exit(1)
 
-    # Default: current directory
-    # Check if current dir has JSONL files
-    if glob.glob(os.path.join(".", "*.jsonl")) or glob.glob(os.path.join(".", "**", "*.jsonl"), recursive=True):
-        return "."
-
-    # Check if we're inside a Claude project directory
+    # Default: find the Claude project directory for the current working directory
     cwd = os.getcwd()
+
+    # Check if we're already inside a Claude project directory
     if CLAUDE_PROJECTS_DIR in cwd:
         return "."
 
-    # Check if there's a matching project for the current working directory
+    # Look up the matching Claude project for this working directory
     candidate = cwd_to_claude_project_dir(cwd)
     if candidate and os.path.isdir(candidate) and glob.glob(os.path.join(candidate, "*.jsonl")):
         return candidate
 
-    # No JSONL files found locally - offer project selection
+    # No matching Claude project - offer project selection
     if sys.stdin.isatty():
         return select_project()
     else:
